@@ -1,0 +1,31 @@
+=== PROJECT 1: SSH BRUTE FORCE DETECTION ===
+=== SPL QUERIES ===
+
+--- Query 1: All Failed SSH Logins ---
+index=main sourcetype=linux_secure "Failed password"
+| table _time, src_ip, user, host
+
+--- Query 2: Count Failures per Source IP ---
+index=main sourcetype=linux_secure "Failed password"
+| rex "from (?<src_ip>\d+\.\d+\.\d+\.\d+)"
+| stats count as failed_attempts by src_ip
+| sort - failed_attempts
+
+--- Query 3: Threshold Detection (5+ failures in 5 minutes) ---
+index=main sourcetype=linux_secure "Failed password"
+| rex "from (?<src_ip>\d+\.\d+\.\d+\.\d+)"
+| bucket _time span=5m
+| stats count as attempts by _time, src_ip
+| where attempts > 5
+
+--- Query 4: Critical - Success After Multiple Failures ---
+index=main sourcetype=linux_secure ("Failed password" OR "Accepted password")
+| rex "from (?<src_ip>\d+\.\d+\.\d+\.\d+)"
+| rex "for (?<user>\S+) from"
+| stats count(eval(match(_raw,"Failed"))) as failures,
+        count(eval(match(_raw,"Accepted"))) as successes by src_ip, user
+| where failures > 3 AND successes > 0
+
+--- Query 5: Unauthorized sudo Attempt ---
+index=main sourcetype=linux_secure "not in sudoers"
+| table _time, user, host, _raw
