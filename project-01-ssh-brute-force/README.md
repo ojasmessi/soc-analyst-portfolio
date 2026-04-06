@@ -2,7 +2,7 @@
 
 ![Project Status](https://img.shields.io/badge/Status-Complete-green)
 ![SIEM](https://img.shields.io/badge/SIEM-Splunk-orange)
-![Attack Tool](https://img.shields.io/badge/Tools-Hydra%20|%20Medusa%20)
+![Attack Tool](https://img.shields.io/badge/Tools-Hydra%20|%20Medusa%20) 
 ![ATT&CK](https://img.shields.io/badge/MITRE-T1110.001%20|%20T1003.008%20|%20T1548-blue)
 
 ## 📌 Project Overview
